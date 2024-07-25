@@ -1,0 +1,36 @@
+---
+- name: Configure Juniper interfaces from CSV
+  hosts: all
+  gather_facts: no
+  vars:
+    excel_path: "./interfaces.csv"
+  tasks:
+    - name: "Read variable from CSV file and return a dictionary"
+      read_csv:
+        path: "{{ excel_path }}"
+      register: data_input
+      delegate_to: localhost
+
+    - name: Apply interface configuration
+      template:
+        src: templates/interface_config.j2
+        dest: /var/tmp/interface_config_{{ item.interface_name }}.conf
+      loop: "{{ data_input.list }}"
+      loop_control:
+        label: "{{ item.interface_name }}"
+
+    - name: Load interface configuration on Juniper device
+      junos_config:
+        src: /var/tmp/interface_config_{{ item.interface_name }}.conf
+        load: "merge"
+        commit: yes
+      loop: "{{ data_input.list }}"
+      loop_control:
+        label: "{{ item.interface_name }}"
+
+    - name: Display commit result
+      debug:
+        msg: "Configuration applied for interface {{ item.interface_name }}"
+      loop: "{{ data_input.list }}"
+      loop_control:
+        label: "{{ item.interface_name }}"

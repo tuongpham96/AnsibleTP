@@ -1,0 +1,9 @@
+interfaces {
+    {{ item.interface_name }} {
+        unit 0 {
+            family inet {
+                address {{ item.ip_address }}/{{ item.subnet_mask }};
+            }
+        }
+    }
+}

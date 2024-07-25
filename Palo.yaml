@@ -1,0 +1,10 @@
+---
+- name: palo_config_policy
+  hosts: palo-01
+  gather_facts: no
+  connection: local
+  task:
+    - name: palo_config_task
+      shell: python3 /root/palo_ansible/python.py 
+      register: shell_output
+      debug: shell_output
