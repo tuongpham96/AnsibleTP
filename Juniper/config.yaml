@@ -13,4 +13,4 @@
           host: "{{ ansible_host }}"
         timeout: 120
         load: merge
-        src: "interface.conf"
+        src: "config/nameserver.conf"
